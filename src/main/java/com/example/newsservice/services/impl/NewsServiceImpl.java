@@ -39,12 +39,15 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public NewsDto update(NewsDto newsDto, Long id) {
-        return Optional.ofNullable(newsDto.getId()).map(entityId -> {
-            if (!newsRepository.existsById(entityId)) {
-                throw new ResourceNotFoundException("this JobPost not found");
-            }
-            return converter.convert(newsRepository.save(converter.convert(newsDto, News.class)), NewsDto.class);
-        }).orElseThrow(() -> new ResourceNotFoundException("JobPost not available"));
+        Optional<News> byId = newsRepository.findById(id);
+
+        if (!byId.isPresent()) {
+            throw new ResourceNotFoundException("News with id " + id + " not found");
+        }
+
+        return converter.convert(newsRepository.save(converter.convert(newsDto, News.class)), NewsDto.class);
+
+
     }
 
     @Override
